@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;" charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>edThreeJS</title>
+    <style>
+      body 
+      {
+        margin: 0;
+        background-color: #666666;
+      }
+
+      #scene 
+      {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .hideLine { visibility: hidden; };
+      
+      .cursorPointer { cursor: pointer; }
+      .cursorNormal { cursor: normal; }
+    </style>
+    <link rel="stylesheet" type="text/css" href="./css/gui.css" />
+    <link rel="stylesheet" type="text/css" href="./css/style_mainScroll.css" />
+    <!-- <script type="text/javascript" src="./lib/Three.js"></script> -->
+    <script type="text/javascript" src="./lib/jquery.js"></script>
+    <script type="text/javascript" src="./Js/modules/lodash.js"></script>
+  </head>
+  <body>
+    <div id="scene"></div>
+    <div class="leftPanel">
+      <div class="btnAddGeometry" title="Добавить фигуру">
+        <code class="T">+</code>
+      </div>
+      <div class="btnAddGrp" title="Добавить группу">
+        <code class="T">[]</code>
+      </div>
+      <div class="btnDeselect" title="Отменить выбор">
+        <code class="T">#</code>
+      </div>
+      <div class="btnCopy" title="Копировать элемент">
+        <code class="T">cp</code>
+      </div>
+      <div class="btnMove" title="Переместить элемент">
+        <code class="T mvT">mv</code>
+      </div>
+      <div class="btnRollUpLeftPanel" title="Свернуть панель">
+        <code class="T">_</code>
+      </div>
+      <div class="blListObjs mainScroll">
+        <table>
+          <tbody class="tbodyListObjs"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="blMain_right">
+      <div class="rightPanel">
+        <div class="btnRollUpRightPanel" title="Свернуть панель">
+          <code class="T">_</code>
+        </div>
+        <div class="btnClosePaletteClrs" title="Закрыть палитру">
+          <code class="T">x</code>
+        </div>
+        <div class="btnCloseUIVertix" title="Закрыть">
+          <code class="T">x</code>
+        </div>
+        <div class="btnOpenUIVertix" title="Показать вершины">
+          <code class="T">●</code>
+        </div>
+        <div class="blListParameters mainScroll">
+          <table>
+            <tbody>
+              <!-- 1 -->
+              <tr>
+                <td class="titleParameter titleParameterPos">
+                  <code><span class="hideLine">_</span><span class="arrowPos">></span> Position</code>
+                </td>
+              </tr>
+              <tr class="blParametersPos">
+                <td>
+                  <table class="parameters">
+                    <tbody class="tPrmsPos"></tbody>
+                  </table>
+                </td>
+              </tr>
+              <!-- 2 -->
+              <tr>
+                <td class="titleParameter titleParameterRot">
+                  <code><span class="hideLine">_</span><span class="arrowRot">></span> Rotation</code>
+                </td>
+              </tr>
+              <tr class="blParametersRot">
+                <td>
+                  <table class="parameters">
+                    <tbody class="tPrmsRot"></tbody>
+                  </table>
+                </td>
+              </tr>
+              <!-- 3 -->
+              <tr>
+                <td class="titleParameter titleParameterFigure">
+                  <code><span class="hideLine">_</span><span class="arrowPrm">></span> Parameters</code>
+                </td>
+              </tr>
+              <tr class="blParametersFigure">
+                <td>
+                  <table class="parameters">
+                    <tbody class="tPrmsFigure"></tbody>
+                  </table>
+                </td>
+              </tr>
+              <!-- 4 -->
+              <tr>
+                <td class="titleParameter titleParameterVerti">
+                  <code><span class="hideLine">_</span><span class="arrowVerti">></span> Offset vertex</code>
+                </td>
+              </tr>
+              <tr class="blParametersVerti">
+                <td>
+                  <table class="parameters">
+                    <tbody class="tPrmsVerti"></tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="blMain_showVertices">
+        <div class="bl_showVertices">
+          <div class="btn_vertix btn_SHVerti">
+            <code class="TVerti">Вершины</code>
+            <div class="indicatorSHVerti"></div>
+          </div>
+          <div class="btn_vertix btn_historyOffsetVerti">
+            <code class="TVerti">История</code>
+          </div>
+          <div class="btn_vertix btn_PrmVerti">
+            <code class="TVerti">Параметры</code>
+          </div>
+        </div>
+        <div class="bl_setPrmVerti">
+          <div class="bl_inpRadiusVerti">
+            <code class="TRadiusVerti">Radius:</code>
+            <input id="inpRVerti" class="inpDesign inpDesignRVerti" style="margin: 0px 0px;" data-arg="r" data-type="verti" />
+          </div>
+          <div class="bl_inpOffsetRVerti">
+            <code class="TOffsetRVerti">Offset:</code>
+            <input id="inpOffsetVerti" class="inpDesign inpDesignOffsetRVerti" style="margin: 0px 0px;" />
+          </div>
+        </div>
+        <div class="blMain_historyOffsetVerti mainScroll">
+          <table>
+            <tbody class="tHistoryOV"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="bl_listFigures">
+      <div class="btn_CreateFigure btn_CreateFigure_1" data-createfigure="0">
+        <code class="T">Коробка</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_2" data-createfigure="1">
+        <code class="T">Капсула</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_3" data-createfigure="2">
+        <code class="T">Круговая</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_4" data-createfigure="3">
+        <code class="T">Конус</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_5" data-createfigure="4">
+        <code class="T">Цилиндр</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_6" data-createfigure="5">
+        <code class="T">Додекаэдр</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_7" data-createfigure="6">
+        <code class="T">Икосаэдр</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_8" data-createfigure="7">
+        <code class="T">Токарный<span class="hideLine">_</span>станок</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_9" data-createfigure="8">
+        <code class="T">Октаэдр</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_10" data-createfigure="9">
+        <code class="T">Плитка</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_11" data-createfigure="10">
+        <code class="T">Кольцо</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_12" data-createfigure="11">
+        <code class="T">Сфера</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_13" data-createfigure="12">
+        <code class="T">Тетраэдр</code>
+      </div>
+      <div class="btn_CreateFigure btn_CreateFigure_14" data-createfigure="13">
+        <code class="T">Тор</code>
+      </div>
+    </div>
+    <div class="bl_paletteClr">
+      <div class="blWinClr"></div>
+      <div class="blAdjustmentClr">
+        <div id="bl_setClrRange_R" class="bl_setClrRange bl_setClrRange_R">
+          <code class="squareBracketInBegin">[</code>
+          <code class="lengthRange">==================================</code>
+          <div class="blScreenSaverForRange_R"></div>
+          <code class="slider_R">[-]</code>
+          <code class="squareBracketInEnd">]</code>
+        </div>
+        <div id="bl_setClrRange_G" class="bl_setClrRange bl_setClrRange_G">
+          <code class="squareBracketInBegin">[</code>
+          <code class="lengthRange">==================================</code>
+          <div class="blScreenSaverForRange_G"></div>
+          <code class="slider_G">[-]</code>
+          <code class="squareBracketInEnd">]</code>
+        </div>
+        <div id="bl_setClrRange_B" class="bl_setClrRange bl_setClrRange_B">
+          <code class="squareBracketInBegin">[</code>
+          <code class="lengthRange">==================================</code>
+          <div class="blScreenSaverForRange_B"></div>
+          <code class="slider_B">[-]</code>
+          <code class="squareBracketInEnd">]</code>
+        </div>
+      </div>
+      <div class="bl_inpClrHex">
+        <input class="inpClrHex" placeholder="_" />
+        <div class="btnAddCreateClr" title="Сохранить цвет">
+          <code class="T">+</code>
+        </div>
+      </div>
+      <div class="bl_historyCreateClrs scroll_historyCreateClrs">
+        <table>
+          <tbody class="blHistoryClrs"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="bl_warningForClipboard">
+      <div class="bl_warningFC">
+        <code class="T">Внимание</code>
+      </div>
+      <div class="bl_waringFCDescription">
+        <code class="bl_waringFCDescription_1">
+          Вы не можете пользоваться в данный момент редактором "edThreeJS" потому, что
+          запретили доступ к буферу обмена.
+        </code>
+        <code class="bl_waringFCDescription_2">
+          Пожалуйста в настройках браузера 
+          разрешите данному сайту доступ на чтение/запись из буфера обмена.
+        </code>
+      </div>
+    </div>
+    <div class="bl_warningNoFocus">
+      <div class="bl_warningNF">
+        <code class="T">Внимание</code>
+      </div>
+      <div class="bl_waringNFDescription">
+        <code>Данная вкладка не является активной!</code>
+        <code>Пожалуйста нажмите на нее, чтобы она снова стала активной.</code>
+      </div>
+    </div>
+    <script type="importmap">
+      {
+        "imports": 
+        {
+          "three": "./lib/three@0.174.0/build/three.module.js",
+          "three/addons/": "./lib/three@0.174.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="./Js/modules/mainModules.js"></script>
+    <script type="module" src="./Js/dt/magicNum.js"></script>
+    <script type="module" src="./Js/scene.js"></script>
+    <script type="module" src="./Js/figure.js"></script>
+    <script type="module" src="./Js/gui.js"></script>
+    <script type="module" src="./Js/main.js"></script>
+    <script type="module" src="./Js/start.js"></script>
+  </body>
+</html>
